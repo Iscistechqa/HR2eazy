@@ -12,7 +12,7 @@ public class ReadExcel {
 	
 	public static String[][] getExcelData() {
 		
-		String fileLocation = "./Testdata/ApplyReplacementLeave.xlsx";
+		String fileLocation = "./Testdata/ApplyReplacementLeave1.xlsx";
 		
 		XSSFWorkbook workBook = null;
 		try {

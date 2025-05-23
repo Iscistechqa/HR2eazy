@@ -3,11 +3,11 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="replacementLeaveApprovalModule.DataProvider">
+      <class name="claimModule.AnnClaimModule">
         <methods>
-          <include name="learnDataProvider" invocation-numbers="5"/>
+          <include name="annClaimModule"/>
         </methods>
-      </class> <!-- replacementLeaveApprovalModule.DataProvider -->
+      </class> <!-- claimModule.AnnClaimModule -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->

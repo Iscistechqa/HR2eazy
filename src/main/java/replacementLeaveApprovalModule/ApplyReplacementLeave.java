@@ -200,6 +200,7 @@ public class ApplyReplacementLeave {
 				 if(workDuaration) {
 					 System.out.println("User applied replacement leave based on the Days");
 					 if(workDays) {
+						 // date checking
 						 List<WebElement> elements = driver.findElements(By.xpath("//tr/td[2]"));
 						 int countOfDate = elements.size();
 						 // Replace all hyphens with spaces
@@ -214,6 +215,7 @@ public class ApplyReplacementLeave {
 							 }
 						 }
 					 }else {
+						 // festival checking
 						 List<WebElement> elements = driver.findElements(By.xpath("//tr/td[5]"));
 						 int countOfLeaveDes = elements.size();
 						 for(int i=0; i<=countOfLeaveDes; i++) {
@@ -261,7 +263,160 @@ public class ApplyReplacementLeave {
 				 
 			}
 
-		
+// Test Case 2 - approver leave
+		@Test(dataProvider = "getData", dataProviderClass = DataUtilis.class, dependsOnMethods = {"applyReplacementLeave"})
+		public void approverLeaveModule(String[] data) {
+			System.out.println("It's started");
+			String approverUserName = data[11];
+			String approverPassword = data[12];
+			String duration = data[4];
+			boolean workDuaration = Boolean.parseBoolean(duration);
+			String workDay = data[2];
+			boolean workDays = Boolean.parseBoolean(workDay);
+			String selectDaysValue = data[3];
+			String date = data[5];
+			// change the date format for assertions
+			String formattedDate = date.replace("-", " ");
+			String approveReject = data[13];
+			boolean statusApproveReject = Boolean.parseBoolean(approveReject);
+			
+			// initialize the chrome driver
+			ChromeDriver driver = new ChromeDriver();
+			driver.manage().window().maximize();
+			driver.get("https://qaen.hr2eazy.com/Default.aspx");
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
+
+			// Login Module
+			// enter username
+			driver.findElement(By.xpath("//input[@id='txtLanId']")).sendKeys(approverUserName);
+			// enter password
+			driver.findElement(By.xpath("//input[@id='txtPassword']")).sendKeys(approverPassword);
+			// click login
+			driver.findElement(By.xpath("//input[@id='btnSubmit']")).click();
+			
+			WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+			wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
+			
+			// check pop-up it's displayed
+			try {
+				wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//button[text()='×'])[4]")));	
+				driver.findElement(By.xpath("(//button[text()='×'])[4]")).click();
+				wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				System.out.println("Pop-up it's not displayed " + e.getMessage());
+			}
+			
+			// click approval
+			try {
+				driver.findElement(By.xpath("//a[text()='Approval']")).click();
+				wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Approval']")));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			
+			// click apply replacement leave 
+			try {
+				driver.findElement(By.xpath("//a[@id='ctl00_ContentPlaceHolder1_tvApprovalDetailt12']")).click();
+				wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Year']")));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+			
+			// wait for some element to be present
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@id='ctl00_ContentPlaceHolder1_LblYear']")));
+			
+			// first check days or hours
+			if(workDuaration) {
+				System.out.println("Default select option in Days");
+				// check the workdays - if it's true it will search date and if it's false it will search public holiday
+				if(workDays) {
+					System.out.println("Based on date we are going to approve/reject");
+					List<WebElement> elements = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeave']/tbody/tr/td[3]"));
+					for(int i=0;i<=elements.size();i++) {
+						String dateVerification = elements.get(i).getText();
+						if(dateVerification.equals(formattedDate)) {
+							System.out.println(dateVerification + " it's matches");
+							List<WebElement> elements2 = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeave']/tbody/tr/td[1]"));
+							elements2.get(i).click();
+							System.out.println("Check-box clicked successfully");
+							break;
+						}else {
+							System.out.println("Check-box doesn't clicked successfully");
+						}
+					}
+					
+				}else {
+					System.out.println("Based on public holiday we are going to approve/reject");
+					List<WebElement> elements = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeave']/tbody/tr/td[8]"));
+					for(int i=0;i<=elements.size();i++) {
+						String publicHolidayVerification = elements.get(i).getText();
+						if(publicHolidayVerification.equals(selectDaysValue)) {
+							System.out.println(publicHolidayVerification + " it's matches");
+							List<WebElement> elements2 = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeave']/tbody/tr/td[1]"));
+							elements2.get(i).click();
+							System.out.println("Check-box clicked successfully");
+							break;
+						}else {
+							System.out.println("Check-box doesn't clicked successfully");
+						}
+					}
+				}
+				
+			}else {
+				System.out.println("We are going to select Hours options in Type option");
+				driver.findElement(By.xpath("//label[text()='Hours']")).click();
+				wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@id='ctl00_ContentPlaceHolder1_lblReplacementLeave']")));
+				// check the workdays - if it's true it will search date and if it's false it will search public holiday
+				if(workDays) {
+					System.out.println("Based on date we are going to approve/reject");
+					List<WebElement> elements = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeaveHours']/tbody/tr/td[3]"));
+					for(int i=0;i<=elements.size();i++) {
+						String dateVerification = elements.get(i).getText();
+						if(dateVerification.equals(formattedDate)) {
+							System.out.println(dateVerification + " it's matches");
+							List<WebElement> elements2 = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeaveHours']/tbody/tr/td[1]"));
+							elements2.get(i).click();
+							System.out.println("Check-box clicked successfully");
+							break;
+						}else {
+							System.out.println("Check-box doesn't clicked successfully");
+						}
+					}
+					
+				}else {
+					System.out.println("Based on public holiday we are going to approve/reject");
+					List<WebElement> elements = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeaveHours']/tbody/tr/td[9]"));
+					
+					for(int i=0;i<=elements.size();i++) {
+						String publicHolidayVerification = elements.get(i).getText();
+						if(publicHolidayVerification.equals(selectDaysValue)) {
+							System.out.println(publicHolidayVerification + " it's matches");
+							List<WebElement> elements2 = driver.findElements(By.xpath("//table[@id='ctl00_ContentPlaceHolder1_GvReplacementLeaveHours']/tbody/tr/td[1]"));
+							elements2.get(i).click();
+							System.out.println("Check-box clicked successfully");
+							break;
+						}else {
+							System.out.println("Check-box doesn't clicked successfully");
+						}
+					}
+				}
+				
+			}
+			
+			// approve/reject flow
+//			if(statusApproveReject) {
+//				System.out.println("We are going to approve");
+//				driver.findElement(By.xpath("//input[@id='ctl00_ContentPlaceHolder1_btnApproveDown']")).click();
+//				System.out.println("Approved Successfully");
+//			}else {
+//				System.out.println("We are going to reject");
+//				driver.findElement(By.xpath("//input[@id='ctl00_ContentPlaceHolder1_btnRejectDown']")).click();
+//				System.out.println("Reject Successfully");
+//			}
+			
+		// 	driver.quit();
+		}
 	}
 
 
