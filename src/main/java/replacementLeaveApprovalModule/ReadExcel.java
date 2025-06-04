@@ -12,11 +12,12 @@ public class ReadExcel {
 	
 	public static String[][] getExcelData() {
 		
-		String fileLocation = "./Testdata/ApplyReplacementLeave1.xlsx";
+		String fileLocationForApplyReplacementLeave = "./Testdata/ApplyReplacementLeave1.xlsx";
+		String fileLocationForClaimApply = "./Testdata/ClientModule.xlsx";
 		
 		XSSFWorkbook workBook = null;
 		try {
-			workBook = new XSSFWorkbook(fileLocation);
+			workBook = new XSSFWorkbook(fileLocationForClaimApply);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

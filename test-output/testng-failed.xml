@@ -5,7 +5,7 @@
     <classes>
       <class name="claimModule.AnnClaimModule">
         <methods>
-          <include name="annClaimModule"/>
+          <include name="annClaimModule" invocation-numbers="0"/>
         </methods>
       </class> <!-- claimModule.AnnClaimModule -->
     </classes>
